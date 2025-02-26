@@ -60,6 +60,7 @@
 
 <h2>Carrito de Compras</h2>
 <ul id="cartList"></ul>
+<button id="checkoutButton" onclick="goToPaymentPage()">Ir a Pagar</button>
 
 <script>
     async function fetchProducts() {
@@ -106,6 +107,17 @@
             listItem.textContent = `${item.name} - $${item.price}`;
             cartList.appendChild(listItem);
         });
+    }
+
+    function goToPaymentPage() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart)); // Guardar carrito en localStorage
+        window.location.href = 'paymentPage.html'; // Redirigir a la página de pago
     }
 
     fetchProducts();

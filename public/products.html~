@@ -60,6 +60,7 @@
 
 <h2>Carrito de Compras</h2>
 <ul id="cartList"></ul>
+<button id="checkoutButton" onclick="goToPaymentPage()">Ir a Pagar</button>
 
 <script>
     async function fetchProducts() {
@@ -107,7 +108,7 @@
             cartList.appendChild(listItem);
         });
     }
-    
+
     fetchProducts();
 </script>
 
