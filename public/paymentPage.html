@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Pago</title>
+    <script src="https://cdn.conekta.io/js/latest/conekta.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        ul {
+            background: white;
+            padding: 15px;
+            list-style: none;
+        }
+        li {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Resumen de Compra</h1>
+<ul id="cartSummary"></ul>
+<h2>Total: $<span id="totalAmount">0</span></h2>
+
+<h3>Datos de la Tarjeta</h3>
+<input type="text" id="cardName" placeholder="Nombre en la tarjeta">
+<input type="text" id="cardNumber" placeholder="Número de tarjeta">
+<input type="text" id="cardCVC" placeholder="CVC">
+<input type="text" id="cardExpMonth" placeholder="Mes de expiración (MM)">
+<input type="text" id="cardExpYear" placeholder="Año de expiración (YYYY)">
+
+<button onclick="processPayment()">Pagar</button>
+
+<script>
+    Conekta.setPublicKey('key_Jd4Ww3Nz6tAfOd1EKd8dpQf');
+
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartSummary = document.getElementById('cartSummary');
+        const totalAmount = document.getElementById('totalAmount');
+        cartSummary.innerHTML = '';
+
+        let total = 0;
+        cart.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - $${item.price}`;
+            cartSummary.appendChild(listItem);
+            total += item.price;
+        });
+
+        totalAmount.textContent = total.toFixed(2);
+    }
+
+    function processPayment() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
+
+        const cardData = {
+            card: {
+                number: document.getElementById('cardNumber').value,
+                name: document.getElementById('cardName').value,
+                exp_year: document.getElementById('cardExpYear').value,
+                exp_month: document.getElementById('cardExpMonth').value,
+                cvc: document.getElementById('cardCVC').value,
+            }
+        };
+
+        console.log(cardData);
+
+        Conekta.Token.create(cardData, function(token) {
+            console.log("Token generado:", token.id);
+            fetch('http://localhost:8084/api/pago/crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    totalPrice: parseFloat(document.getElementById('totalAmount').textContent),
+                    deliveryAddress: 'Calle Falsa 123',
+                    token: token.id,
+                    cart: cart
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Pago exitoso");
+                        localStorage.removeItem('cart');
+                        window.location.href = 'products.html';
+                    } else {
+                        alert("Error en el pago: " + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }, function(error) {
+            alert("Error al generar token: " + error.message);
+        });
+    }
+
+    loadCart();
+</script>
+
+</body>
+</html>
