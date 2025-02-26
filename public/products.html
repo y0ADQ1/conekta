@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lista de Productos</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody id="productsTable">
+    <!-- Los productos se insertarán aquí -->
+    </tbody>
+</table>
+
+<h2>Carrito de Compras</h2>
+<ul id="cartList"></ul>
+
+<script>
+    async function fetchProducts() {
+        try {
+            const response = await fetch('http://localhost:8084/api/products');
+            const products = await response.json();
+
+            const tableBody = document.getElementById('productsTable');
+            tableBody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = `
+                    <tr>
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>$${product.price}</td>
+                        <td><button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Añadir al carrito</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            loadCart();
+        } catch (error) {
+            console.error('Error al obtener los productos:', error);
+        }
+    }
+
+    function addToCart(id, name, price) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.push({ id, name, price });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        console.log(`Producto agregado al carrito: ${name} (${id}) - $${price}`);
+        loadCart();
+    }
+
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartList = document.getElementById('cartList');
+        cartList.innerHTML = '';
+
+        cart.forEach((item, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - $${item.price}`;
+            cartList.appendChild(listItem);
+        });
+    }
+
+    fetchProducts();
+</script>
+
+</body>
+</html>

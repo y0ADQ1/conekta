@@ -1,22 +1,22 @@
 {
   "development": {
     "username": "root",
-    "password": 8721,
-    "database": "database_development",
+    "password": "8721",
+    "database": "conekta",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
-    "password": 8721,
-    "database": "database_test",
+    "password": "8721",
+    "database": "conekta",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
-    "password": 8721,
-    "database": "database_production",
+    "password": "8721",
+    "database": "conekta",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }

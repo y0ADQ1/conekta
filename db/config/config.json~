@@ -8,7 +8,7 @@
   },
   "test": {
     "username": "root",
-    "password": 8721,
+    "password": '8721',
     "database": "conekta",
     "host": "127.0.0.1",
     "dialect": "mysql"
