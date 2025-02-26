@@ -1,28 +1,25 @@
-const dotenv = require('dotenv');
-const bodyParser = require('body-parser');
+require('dotenv').config();
 const express = require('express');
-const { Sequelize } = require('sequelize');
-
-const router = require('./routes/authRoutes');
-
-dotenv.config();
+const path = require('path');
+const cors = require('cors');
+const routes = require('./routes/authRoutes');
 
 const app = express();
-
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(bodyParser.json());
-
-// Registrar rutas
-app.use('/api/auth', router);
-
 const PORT = process.env.PORT || 8084;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/api', routes);
+
+app.get('/products', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'products.html'));
 });
 
-module.exports = sequelize;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

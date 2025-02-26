@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const conekta = require('conekta');
-const { Order } = require('../models');
+const { getAllProducts } = require('../controllers/productController');
+const { addToCart } = require('../controllers/productController');
 
-conekta.Conekta.privateKey = process.env.CONEKTA_PRIVATE_KEY_TEST;
+// Rutas de API
+router.get('/products', getAllProducts);
+router.post('/products', addToCart);
 
+module.exports = router;
